@@ -1,0 +1,10 @@
+argparse>=1.2.1
+GeoAlchemy>=0.6
+SQLAlchemy>=0.7.2
+transitfeed>=1.2.7
+
+[oracle]
+cx_Oracle>=5.1
+
+[postgresql]
+psycopg2>=2.4.2
