@@ -13,7 +13,7 @@ class Stop(Base):
                        'location_type', 'parent_station']
     
     dump_id = Column(Integer, primary_key=True, nullable=False)
-    stop_id = Column(String, primary_key=True, nullable=False)
+    stop_id = Column(Integer, primary_key=True, nullable=False)
     stop_code = Column(String)
     stop_name = Column(String, nullable=False)
     stop_desc = Column(String)

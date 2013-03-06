@@ -3,7 +3,7 @@ import datetime
 import os
 import sys
 import time
-
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from gtfsdb import util
@@ -16,8 +16,8 @@ class _Base(object):
     proposed_fields = []
 
     @classmethod
-    def from_dict(cls, attrs):
-        clean_dict = cls.make_record(attrs)
+    def from_dict(cls, attrs, engine, dump_id):
+        clean_dict = cls.make_record(attrs, engine, dump_id)
         c = cls(**clean_dict)
         return c
 
@@ -45,9 +45,10 @@ class _Base(object):
         return '%s.txt' %(cls.__tablename__)
 
     @classmethod
-    def load(cls, engine, directory=None, validate=True):
+    def load(cls, engine, directory=None, validate=True, dump_id=None, flush_interval=10000, merge=False):
         records = []
         file_path = '%s/%s' %(directory, cls.get_filename())
+        
         if os.path.exists(file_path):
             start_time = time.time()
             file = open(file_path, 'r')
@@ -58,29 +59,40 @@ class _Base(object):
             s = ' - %s ' %(cls.get_filename())
             sys.stdout.write(s)
             table = cls.__table__
-            engine.execute(table.delete())
+            #engine.execute(table.delete())
             i = 0
+            
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            
             for row in reader:
-                records.append(cls.make_record(row, engine))
+                if merge:
+                    session.merge(cls.from_dict(row, engine, dump_id))
+                else:
+                    session.add(cls.from_dict(row, engine, dump_id))
+#                records.append(cls.make_record(row, engine, dump_id))
                 i += 1
-                # commit every 10,000 records to the database to manage memory usage
-                if i >= 10000:
-                    engine.execute(table.insert(), records)
+#                # commit every 10,000 records to the database to manage memory usage
+                if i >= flush_interval:
+                    session.commit()
+#                    engine.execute(table.insert(), records)
                     sys.stdout.write('*')
-                    records = []
+                    sys.stdout.flush()
+#                    records = []
                     i = 0
-            if len(records) > 0:
-                engine.execute(table.insert(), records)
+#            if len(records) > 0:
+#                engine.execute(table.insert(), records)
+            session.commit()
             file.close()
             processing_time = time.time() - start_time
             print ' (%.0f seconds)' %(processing_time)
 
     @classmethod
-    def make_record(cls, row, engine):
+    def make_record(cls, row, engine, dump_id):
         # clean dict
         for k, v in row.items():
             if isinstance(v, basestring):
-                v = v.strip()
+                row[k] = v.strip()
             if (k not in cls.__table__.c):
                 del row[k]
             elif not v:
@@ -93,7 +105,8 @@ class _Base(object):
             cls.add_geom_to_dict(row)
 
         # add dump id
-        row['dump_id']=666
+        if dump_id != None:
+            row['dump_id']=dump_id
         
         return row
 

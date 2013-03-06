@@ -20,7 +20,7 @@ class FareAttribute(Base):
     optional_fields = ['transfer_duration']
     proposed_fields = ['agency_id']
 
-    fare_id = Column(String, primary_key=True)
+    fare_id = Column(Integer, primary_key=True)
     price = Column(Numeric(10,2), nullable=False)
     currency_type = Column(String, nullable=False)
     payment_method = Column(Integer, nullable=False)
@@ -37,11 +37,11 @@ class FareRule(Base):
     proposed_fields = ['service_id']
 
     id = Column(Integer, Sequence(None, optional=True), primary_key=True)
-    fare_id = Column(String, ForeignKey(FareAttribute.fare_id), nullable=False)
-    route_id = Column(String)
-    origin_id = Column(String)
-    destination_id = Column(String)
-    contains_id = Column(String)
-    service_id = Column(String)
+    fare_id = Column(Integer, ForeignKey(FareAttribute.fare_id), nullable=False)
+    route_id = Column(Integer)
+    origin_id = Column(Integer)
+    destination_id = Column(Integer)
+    contains_id = Column(Integer)
+    service_id = Column(Integer)
 
 Index('%s_ix1' %(FareRule.__tablename__), FareRule.fare_id)

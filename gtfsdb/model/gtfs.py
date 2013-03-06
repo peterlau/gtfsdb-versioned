@@ -8,6 +8,7 @@ import sys
 import tempfile
 from urllib import urlretrieve
 import zipfile
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -24,7 +25,8 @@ from .stop_time import StopTime
 from .stop import Stop
 from .transfer import Transfer
 from .trip import Trip
-
+from .canonical_pattern import CanonicalPattern
+from .dump import Dump
 
 class GTFS(object):
 
@@ -37,27 +39,35 @@ class GTFS(object):
         gtfs_directory = self.unzip()
         data_directory = pkg_resources.resource_filename('gtfsdb', 'data')
 
-        # load lookup tables first
-        RouteType.load(db.engine, data_directory, False)
-        # load GTFS data files & transform/derive additional data
-        # due to foreign key constraints these files need to be loaded in the appropriate order
-        FeedInfo.load(db.engine, gtfs_directory)
-        Agency.load(db.engine, gtfs_directory)
-        Calendar.load(db.engine, gtfs_directory)
-        CalendarDate.load(db.engine, gtfs_directory)
-        Route.load(db.engine, gtfs_directory)
-        Stop.load(db.engine, gtfs_directory)
+        dump_id=Dump.load(db.engine, os.path.basename(self.local_file))
+
+#        # load GTFS data files & transform/derive additional data
+#        # due to foreign key constraints these files need to be loaded in the appropriate order
+#        RouteType.load(db.engine, data_directory, merge=True)
+#        FeedInfo.load(db.engine, gtfs_directory, merge=True)
+#        Agency.load(db.engine, gtfs_directory, merge=True)
+#        Calendar.load(db.engine, gtfs_directory, dump_id=dump_id)
+#        CalendarDate.load(db.engine, gtfs_directory, dump_id=dump_id)
+#        UniversalCalendar.load(db.engine, dump_id=dump_id, merge=True)
+
+        Route.load(db.engine, gtfs_directory, dump_id=dump_id)
+#        Stop.load(db.engine, gtfs_directory, dump_id=dump_id)
+#        
+#        Shape.load(db.engine, gtfs_directory, dump_id=dump_id)
+#        Pattern.load(db.engine, dump_id=dump_id)
+#        
+#        StopTime.load(db.engine, gtfs_directory, dump_id=dump_id)
+#        Trip.load(db.engine, gtfs_directory, dump_id=dump_id, flush_interval=1000)
+#        CanonicalPattern.load(db.engine, dump_id=dump_id)
+#        CanonicalPattern.setupStopPatternsView(db.engine)
+
+#  Do not enable
 #        Transfer.load(db.engine, gtfs_directory)
-#        Shape.load(db.engine, gtfs_directory)
-#        Pattern.load(db.engine)
-        Trip.load(db.engine, gtfs_directory)
-        StopTime.load(db.engine, gtfs_directory)
 #        Frequency.load(db.engine, gtfs_directory)
 #        FareAttribute.load(db.engine, gtfs_directory)
 #        FareRule.load(db.engine, gtfs_directory)
-#        shutil.rmtree(gtfs_directory)
-#        UniversalCalendar.load(db.engine)
-
+        
+        shutil.rmtree(gtfs_directory)
         # load derived geometries
         # currently only written for postgresql
         
@@ -76,6 +86,7 @@ class GTFS(object):
 #            session.close()
 #            process_time = time.time() - start_seconds
 #            print ' (%.0f seconds)' %(process_time)
+  
 
     def validate(self):
         """Run transitfeed.feedvalidator"""

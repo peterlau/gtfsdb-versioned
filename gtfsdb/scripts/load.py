@@ -29,6 +29,13 @@ def init_parser():
         default=None,
         help='Database SCHEMA name',
     )
+    parser.add_argument(
+        '--clear',
+        action='store_true',
+        default=False,
+        help='Clear database first'
+    )    
+    
     args = parser.parse_args()
     return args
 
@@ -38,9 +45,14 @@ def main():
     args = init_parser()
     # create database
     db = Database(args.database_url, args.schema, args.is_geospatial)
-    db.create()
-    # load GTFS into database
+    
+    if args.clear:
+        db.clear()
+    
+    db.create()    
     gtfs = GTFS(args.file)
+    
+    # load GTFS into database
     gtfs.load(db)
 
 

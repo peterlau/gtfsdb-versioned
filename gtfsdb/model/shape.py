@@ -15,7 +15,8 @@ __all__ = ['Pattern', 'Shape']
 class Pattern(Base):
     __tablename__ = 'patterns'
 
-    shape_id = Column(String, primary_key=True)
+    dump_id = Column(Integer, primary_key=True, nullable=False)
+    shape_id = Column(Integer, primary_key=True, nullable=False)
     pattern_dist = Column(Numeric(20,10))
 
     def geom_from_shape(self, shape_points):
@@ -36,7 +37,8 @@ class Pattern(Base):
         return None
 
     @classmethod
-    def load(cls, engine):
+    def load(cls, engine, dump_id=None):
+
         start_time = time.time()
         s = ' - %s' %(cls.__tablename__)
         sys.stdout.write(s)
@@ -47,10 +49,12 @@ class Pattern(Base):
             func.max(Shape.shape_dist_traveled).label('dist')
         )
         shapes = q.group_by(Shape.shape_id)
+
         for shape in shapes:
             pattern = cls()
             pattern.shape_id = shape.shape_id
             pattern.pattern_dist = shape.dist
+            pattern.dump_id = dump_id
             if hasattr(cls, 'geom'):
                 q = session.query(Shape)
                 q = q.filter(Shape.shape_id == shape.shape_id)
@@ -74,11 +78,12 @@ class Shape(Base):
     ]
     optional_fields = ['shape_dist_traveled']
 
-    shape_id = Column(String, primary_key=True)
-    shape_pt_lat = Column(Numeric(12,9))
-    shape_pt_lon = Column(Numeric(12,9))
+    dump_id = Column(Integer, primary_key=True, nullable=False)
+    shape_id = Column(Integer, primary_key=True, nullable=False)
+    shape_pt_lat = Column(Numeric)
+    shape_pt_lon = Column(Numeric)
     shape_pt_sequence = Column(Integer, primary_key=True)
-    shape_dist_traveled = Column(Numeric(20,10))
+    shape_dist_traveled = Column(Numeric)
 
     @classmethod
     def add_geometry_column(cls):

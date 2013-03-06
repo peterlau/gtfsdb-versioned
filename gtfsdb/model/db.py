@@ -13,9 +13,11 @@ class Database(object):
             cls.set_schema(schema)
             if is_geospatial and hasattr(cls, 'add_geometry_column'):
                 cls.add_geometry_column()
-        self.engine = create_engine(url)
+        self.engine = create_engine(url) #echo=True
+
+    def clear(self):
+        Base.metadata.drop_all(bind=self.engine)
 
     def create(self):
         """Create GTFS database"""
-        Base.metadata.drop_all(bind=self.engine)
         Base.metadata.create_all(bind=self.engine)

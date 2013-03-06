@@ -36,11 +36,11 @@ class Route(Base):
     ]
 
     dump_id = Column(Integer, primary_key=True, nullable=False)
-    route_id = Column(String, primary_key=True, nullable=False)
+    route_id = Column(Integer, primary_key=True, nullable=False)
     agency_id = Column(String, ForeignKey(Agency.agency_id), nullable=True)
     route_short_name = Column(String)
     route_long_name = Column(String)
-    route_type = Column(Integer, ForeignKey(RouteType.route_type), nullable=False)
+    route_type = Column(Integer)
     route_url = Column(String)
     route_color = Column(String(6))
     route_text_color = Column(String(6))
@@ -56,10 +56,9 @@ class Route(Base):
 #            q = q.filter(Pattern.trips.any((Trip.route == self)))
 #            self.geom = q.first().geom
 
-    @classmethod
-    def add_geometry_column(cls):
-        cls.geom = GeometryColumn(MultiLineString(2))
-        GeometryDDL(cls.__table__)
+#    @classmethod
+#    def add_geometry_column(cls):
+#        cls.geom = GeometryColumn(MultiLineString(2))
+#        GeometryDDL(cls.__table__)
 
-Index('%s_ix1' %(Route.__tablename__), Route.agency_id)
-Index('%s_ix2' %(Route.__tablename__), Route.route_type)
+Index('%s_ix1' %(Route.__tablename__), Route.dump_id, Route.route_short_name)

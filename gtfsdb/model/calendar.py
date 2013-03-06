@@ -16,7 +16,7 @@ __all__ = ['Calendar', 'CalendarDate', 'UniversalCalendar']
 class Calendar(Base):
     __tablename__ = 'calendar'
 
-    required_fields = [
+    required_fields = [                       
         'service_id',
         'monday',
         'tuesday',
@@ -29,8 +29,8 @@ class Calendar(Base):
         'end_date'
     ]
 
-    id = Column(Integer, Sequence('calendar_id_seq'), primary_key=True)
-    service_id = Column(String, index=True, nullable=False)
+    dump_id = Column(Integer, primary_key=True, nullable=False)
+    service_id = Column(Integer, primary_key=True, nullable=False)
     monday = Column(Boolean, nullable=False)
     tuesday = Column(Boolean, nullable=False)
     wednesday = Column(Boolean, nullable=False)
@@ -69,6 +69,7 @@ class Calendar(Base):
                 dict = {}
                 dict['service_id'] = self.service_id
                 dict['date'] = d
+                dict['dump_id']=self.dump_id
                 date_list.append(dict)
             d += delta
         return date_list
@@ -81,9 +82,9 @@ class CalendarDate(Base):
 
     required_fields = ['service_id', 'date', 'exception_type']
 
-    dump_id = Column(Integer, primary_key=True, nullable=False)
-    service_id = Column(String, primary_key=True, nullable=False)
-    date = Column(Date, primary_key=True, index=True)
+    dump_id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, primary_key=True)
+    date = Column(Date, primary_key=True)
     exception_type = Column(Integer, nullable=False)
 
     @property
@@ -98,9 +99,8 @@ class CalendarDate(Base):
 class UniversalCalendar(Base):
     __tablename__ = 'universal_calendar'
 
-    required_fields = ['service_id', 'date']
-
-    service_id = Column(String, primary_key=True)
+    dump_id = Column(Integer)
+    service_id = Column(Integer)
     date = Column(Date, primary_key=True)
 
     @classmethod
@@ -112,23 +112,25 @@ class UniversalCalendar(Base):
         uc = cls()
         uc.service_id = calendar_date.service_id
         uc.date = calendar_date.date
+        uc.dump_id = calendar_date.dump_id
         return uc
 
     @classmethod
-    def load(cls, engine):
+    def load(cls, engine, dump_id, merge):
         start_time = time.time()
         s = ' - %s' %(cls.__tablename__)
         sys.stdout.write(s)
         Session = sessionmaker(bind=engine)
         session = Session()
-        q = session.query(Calendar)
+        q = session.query(Calendar).filter(Calendar.dump_id==dump_id)
         for calendar in q:
             rows = calendar.to_date_list()
             for row in rows:
                 uc = cls(**row)
-                session.add(uc)
+                session.merge(uc)
         session.commit()
-        q = session.query(CalendarDate)
+        
+        q = session.query(CalendarDate).filter(CalendarDate.dump_id==dump_id)
         for calendar_date in q:
             if calendar_date.is_addition:
                 uc = cls.from_calendar_date(calendar_date)
