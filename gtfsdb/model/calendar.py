@@ -116,7 +116,7 @@ class UniversalCalendar(Base):
         return uc
 
     @classmethod
-    def load(cls, engine, dump_id, merge):
+    def load(cls, engine, dump_id, merge, dump_timestamp):
         start_time = time.time()
         s = ' - %s' %(cls.__tablename__)
         sys.stdout.write(s)
@@ -126,8 +126,9 @@ class UniversalCalendar(Base):
         for calendar in q:
             rows = calendar.to_date_list()
             for row in rows:
-                uc = cls(**row)
-                session.merge(uc)
+                if row['date'] >= dump_timestamp:
+                    uc = cls(**row)
+                    session.merge(uc)
         session.commit()
         
         q = session.query(CalendarDate).filter(CalendarDate.dump_id==dump_id)
