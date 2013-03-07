@@ -43,23 +43,23 @@ class GTFS(object):
 
 #        # load GTFS data files & transform/derive additional data
 #        # due to foreign key constraints these files need to be loaded in the appropriate order
-#        RouteType.load(db.engine, data_directory, merge=True)
-#        FeedInfo.load(db.engine, gtfs_directory, merge=True)
-#        Agency.load(db.engine, gtfs_directory, merge=True)
-#        Calendar.load(db.engine, gtfs_directory, dump_id=dump_id)
-#        CalendarDate.load(db.engine, gtfs_directory, dump_id=dump_id)
-#        UniversalCalendar.load(db.engine, dump_id=dump_id, merge=True)
+        RouteType.load(db.engine, data_directory, merge=True)
+        FeedInfo.load(db.engine, gtfs_directory, merge=True)
+        Agency.load(db.engine, gtfs_directory, merge=True)
+        Calendar.load(db.engine, gtfs_directory, dump_id=dump_id)
+        CalendarDate.load(db.engine, gtfs_directory, dump_id=dump_id)
+        UniversalCalendar.load(db.engine, dump_id=dump_id, merge=True)
 
         Route.load(db.engine, gtfs_directory, dump_id=dump_id)
-#        Stop.load(db.engine, gtfs_directory, dump_id=dump_id)
-#        
-#        Shape.load(db.engine, gtfs_directory, dump_id=dump_id)
-#        Pattern.load(db.engine, dump_id=dump_id)
-#        
-#        StopTime.load(db.engine, gtfs_directory, dump_id=dump_id)
-#        Trip.load(db.engine, gtfs_directory, dump_id=dump_id, flush_interval=1000)
-#        CanonicalPattern.load(db.engine, dump_id=dump_id)
-#        CanonicalPattern.setupStopPatternsView(db.engine)
+        Stop.load(db.engine, gtfs_directory, dump_id=dump_id)
+        
+        Shape.load(db.engine, gtfs_directory, dump_id=dump_id)
+        Pattern.load(db.engine, dump_id=dump_id)
+        
+        StopTime.load(db.engine, gtfs_directory, dump_id=dump_id)
+        Trip.load(db.engine, gtfs_directory, dump_id=dump_id, flush_interval=1000)
+        CanonicalPattern.load(db.engine, dump_id=dump_id)
+        CanonicalPattern.setupStopPatternsView(db.engine)
 
 #  Do not enable
 #        Transfer.load(db.engine, gtfs_directory)
