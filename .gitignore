@@ -1,2 +1,6 @@
 *.pyc
 .hg
+*~
+.project
+.hgignore
+.pydevproject
