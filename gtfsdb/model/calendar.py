@@ -133,12 +133,13 @@ class UniversalCalendar(Base):
         
         q = session.query(CalendarDate).filter(CalendarDate.dump_id==dump_id)
         for calendar_date in q:
-            if calendar_date.is_addition:
-                uc = cls.from_calendar_date(calendar_date)
-                session.merge(uc)
-            if calendar_date.is_removal:
-                kwargs = dict(service_id=calendar_date.service_id, date=calendar_date.date)
-                session.query(cls).filter_by(**kwargs).delete()
+            if calendar_date >= dump_timestamp:
+                if calendar_date.is_addition:
+                    uc = cls.from_calendar_date(calendar_date)
+                    session.merge(uc)
+                if calendar_date.is_removal:
+                    kwargs = dict(service_id=calendar_date.service_id, date=calendar_date.date)
+                    session.query(cls).filter_by(**kwargs).delete()
         session.commit()
         session.close()
         processing_time = time.time() - start_time

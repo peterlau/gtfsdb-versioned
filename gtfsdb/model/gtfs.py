@@ -1,5 +1,4 @@
 from contextlib import closing
-import os
 import time
 import pkg_resources
 import shutil
@@ -9,6 +8,7 @@ import tempfile
 from urllib import urlretrieve
 import zipfile
 import os
+import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -39,16 +39,20 @@ class GTFS(object):
         gtfs_directory = self.unzip()
         data_directory = pkg_resources.resource_filename('gtfsdb', 'data')
 
-        dump_id=Dump.load(db.engine, os.path.basename(self.local_file))
-
-#        # load GTFS data files & transform/derive additional data
-#        # due to foreign key constraints these files need to be loaded in the appropriate order
+        filename=os.path.basename(self.local_file)
+        dump_timestamp=datetime.datetime.strptime(filename, 'san-francisco-municipal-transportation-agency_%Y%m%d_%H%M.zip').date()
+        print "Dump Timestamp: %s" % dump_timestamp
+        
+        dump_id=Dump.load(db.engine, filename)
+        
+        # load GTFS data files & transform/derive additional data
+        # due to foreign key constraints these files need to be loaded in the appropriate order
         RouteType.load(db.engine, data_directory, merge=True)
         FeedInfo.load(db.engine, gtfs_directory, merge=True)
         Agency.load(db.engine, gtfs_directory, merge=True)
         Calendar.load(db.engine, gtfs_directory, dump_id=dump_id)
         CalendarDate.load(db.engine, gtfs_directory, dump_id=dump_id)
-        UniversalCalendar.load(db.engine, dump_id=dump_id, merge=True)
+        UniversalCalendar.load(db.engine, dump_id=dump_id, merge=True, dump_timestamp=dump_timestamp)
 
         Route.load(db.engine, gtfs_directory, dump_id=dump_id)
         Stop.load(db.engine, gtfs_directory, dump_id=dump_id)
