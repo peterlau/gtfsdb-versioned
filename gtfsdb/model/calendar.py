@@ -133,7 +133,7 @@ class UniversalCalendar(Base):
         
         q = session.query(CalendarDate).filter(CalendarDate.dump_id==dump_id)
         for calendar_date in q:
-            if calendar_date >= dump_timestamp:
+            if calendar_date.date >= dump_timestamp:
                 if calendar_date.is_addition:
                     uc = cls.from_calendar_date(calendar_date)
                     session.merge(uc)
