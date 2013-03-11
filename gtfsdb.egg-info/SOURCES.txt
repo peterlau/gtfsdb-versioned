@@ -15,7 +15,9 @@ gtfsdb/model/__init__.py
 gtfsdb/model/agency.py
 gtfsdb/model/base.py
 gtfsdb/model/calendar.py
+gtfsdb/model/canonical_pattern.py
 gtfsdb/model/db.py
+gtfsdb/model/dump.py
 gtfsdb/model/fare.py
 gtfsdb/model/feed_info.py
 gtfsdb/model/frequency.py
