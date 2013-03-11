@@ -1,4 +1,0 @@
-[console_scripts]
-gtfsdb-validate = gtfsdb.scripts.validate:main
-gtfsdb-load = gtfsdb.scripts.load:main
-
