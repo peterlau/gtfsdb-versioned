@@ -126,14 +126,17 @@ class UniversalCalendar(Base):
         for calendar in q:
             rows = calendar.to_date_list()
             for row in rows:
-                if row['date'] >= dump_timestamp:
+                existingcount = session.query(UniversalCalendar).filter(UniversalCalendar.date==row['date']).count()
+                
+                if row['date'] >= dump_timestamp or existingcount == 0:
                     uc = cls(**row)
                     session.merge(uc)
         session.commit()
         
         q = session.query(CalendarDate).filter(CalendarDate.dump_id==dump_id)
         for calendar_date in q:
-            if calendar_date.date >= dump_timestamp:
+            existingcount = session.query(UniversalCalendar).filter(UniversalCalendar.date==row['date']).count()
+            if calendar_date.date >= dump_timestamp or existingcount == 0:
                 if calendar_date.is_addition:
                     uc = cls.from_calendar_date(calendar_date)
                     session.merge(uc)
