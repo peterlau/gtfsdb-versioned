@@ -38,7 +38,7 @@ class FareRule(Base):
 
     id = Column(Integer, Sequence(None, optional=True), primary_key=True)
     fare_id = Column(Integer, ForeignKey(FareAttribute.fare_id), nullable=False)
-    route_id = Column(Integer)
+    route_id = Column(String)
     origin_id = Column(Integer)
     destination_id = Column(Integer)
     contains_id = Column(Integer)

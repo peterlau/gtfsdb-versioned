@@ -25,7 +25,7 @@ class Trip(Base):
     proposed_fields = ['trip_type', 'trip_bikes_allowed']
     dump_id = Column(Integer, primary_key=True, nullable=False)
     trip_id = Column(Integer, primary_key=True, nullable=False)
-    route_id = Column(Integer, nullable=False)
+    route_id = Column(String, nullable=False)
     service_id = Column(String, nullable=False)    
     trip_headsign = Column(String)
     trip_short_name = Column(String)

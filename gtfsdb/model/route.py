@@ -36,7 +36,7 @@ class Route(Base):
     ]
 
     dump_id = Column(Integer, primary_key=True, nullable=False)
-    route_id = Column(Integer, primary_key=True, nullable=False)
+    route_id = Column(String, primary_key=True, nullable=False)
     agency_id = Column(String, ForeignKey(Agency.agency_id), nullable=True)
     route_short_name = Column(String)
     route_long_name = Column(String)
