@@ -69,5 +69,5 @@ class StopTime(Base):
         if 'timepoint' not in kwargs:
             self.timepoint = ('arrival_time' in kwargs)
 
-Index('%s_ix1' %(StopTime.__tablename__), StopTime.stop_id)
-Index('%s_ix2' %(StopTime.__tablename__), StopTime.timepoint)
+Index('%s_dump_id_stop_id_arrival_timestamp' %(StopTime.__tablename__), StopTime.dump_id, StopTime.stop_id, StopTime.arrival_timestamp)
+Index('%s_dump_id_trip_id' %(StopTime.__tablename__), StopTime.dump_id, StopTime.trip_id)
