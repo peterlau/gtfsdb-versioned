@@ -42,6 +42,6 @@ class FareRule(Base):
     origin_id = Column(Integer)
     destination_id = Column(Integer)
     contains_id = Column(Integer)
-    service_id = Column(Integer)
+    service_id = Column(String)
 
 Index('%s_ix1' %(FareRule.__tablename__), FareRule.fare_id)

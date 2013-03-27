@@ -14,7 +14,7 @@ class CanonicalPattern(Base):
 
 
     dump_id = Column(Integer, primary_key=True, nullable=False)
-    service_id = Column(Integer, primary_key=True, nullable=False)
+    service_id = Column(String, primary_key=True, nullable=False)
     route_id = Column(Integer, primary_key=True, nullable=False)
     direction_id = Column(Integer, primary_key=True, nullable=False)
     max_len = Column(Numeric)

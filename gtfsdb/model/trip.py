@@ -26,7 +26,7 @@ class Trip(Base):
     dump_id = Column(Integer, primary_key=True, nullable=False)
     trip_id = Column(Integer, primary_key=True, nullable=False)
     route_id = Column(Integer, nullable=False)
-    service_id = Column(Integer, nullable=False)    
+    service_id = Column(String, nullable=False)    
     trip_headsign = Column(String)
     trip_short_name = Column(String)
     direction_id = Column(Integer)

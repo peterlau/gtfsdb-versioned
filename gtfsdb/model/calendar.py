@@ -30,7 +30,7 @@ class Calendar(Base):
     ]
 
     dump_id = Column(Integer, primary_key=True, nullable=False)
-    service_id = Column(Integer, primary_key=True, nullable=False)
+    service_id = Column(String, primary_key=True, nullable=False)
     monday = Column(Boolean, nullable=False)
     tuesday = Column(Boolean, nullable=False)
     wednesday = Column(Boolean, nullable=False)
@@ -83,7 +83,7 @@ class CalendarDate(Base):
     required_fields = ['service_id', 'date', 'exception_type']
 
     dump_id = Column(Integer, primary_key=True)
-    service_id = Column(Integer, primary_key=True)
+    service_id = Column(String, primary_key=True)
     date = Column(Date, primary_key=True)
     exception_type = Column(Integer, nullable=False)
 
@@ -100,7 +100,7 @@ class UniversalCalendar(Base):
     __tablename__ = 'universal_calendar'
 
     dump_id = Column(Integer)
-    service_id = Column(Integer)
+    service_id = Column(String)
     date = Column(Date, primary_key=True)
 
     @classmethod
